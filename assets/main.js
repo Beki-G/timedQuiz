@@ -4,10 +4,14 @@ var timeCount = document.querySelector(".counter");
 var questionArea = document.querySelector(".questionTxtArea");
 var submitBtn = document.querySelector(".submitBtn");
 var nextBtn = document.querySelector(".nextQ");
+var input = document.createElement("input");
+var br = document.createElement("br");
+var newBtn = document.createElement("a");
+var btnArea = document.querySelector(".btnArea");
 
 var timeUp = false;
 var wrongAns = false;
-var isDone = false; 
+var isDoneBefore = true;
 var questionCount = 0;
 var score = 0;
 var sortedQuestionsArr = sortArr(questionArr);
@@ -33,16 +37,14 @@ function timerStart(){
         timeCount.textContent = leadingZero(minutes) +":" +leadingZero(seconds);
 
         if (t <= 0) { 
-            clearInterval(x)
-            questionArea.textContent = "Quiz over"
+            clearInterval(x);
             timeUp = true;
             timerDiv.classList.add("invisible");
-            showResults();
+            
         } 
 
         if(questionCount >= sortedQuestionsArr.length){
             clearInterval(x);
-            showResults();
         }
 
         if (wrongAns === true){
@@ -53,10 +55,7 @@ function timerStart(){
         }
 
     }, 1000);
-
 }
-
-
 
 function sortArr(arr){
     arr= arr.sort(function (a, b) {  
@@ -123,6 +122,178 @@ function checkAnswers(count){
     questionArea.append(h1El);
 }
 
+function showResults(){
+    // alert("Hey your in Show results")
+    var beginOfResult = "";
+
+    if (isDoneBefore===true){
+        beginOfResult= "You've finished before the timer! You score is: " +score;
+    } else{
+        beginOfResult= "Times's up! Your score is: "+ score;
+    }
+
+    questionArea.textContent = beginOfResult;
+
+    input.setAttribute("type", "type");
+    input.setAttribute("value", "Initials");
+    input.setAttribute("id", "initials")
+    questionArea.appendChild(br)
+    questionArea.appendChild(input);
+
+    newBtn.textContent= "Submit";
+    newBtn.classList.add("btn");
+    newBtn.classList.add("btn-primary");
+    newBtn.setAttribute("role", "button");
+    newBtn.setAttribute("id", "initialsSubmit");
+    newBtn.href = "#";
+
+    btnArea.appendChild(newBtn);
+
+}
+
+function scoreboardBtns(){
+    var newBtn2 = document.createElement("a");
+    var newBtn3 = document.createElement("a");
+
+    newBtn2.textContent= "Clear Scoreboard";
+    newBtn2.classList.add("btn");
+    newBtn2.classList.add("btn-primary");
+    newBtn2.setAttribute("role", "button");
+    newBtn2.setAttribute("id", "clearScores");
+    newBtn2.setAttribute("style", "text-align: center;");
+    newBtn2.href = "#";
+
+    newBtn3.textContent= "Take Quiz Again!";
+    newBtn3.classList.add("btn");
+    newBtn3.classList.add("btn-primary");
+    newBtn3.setAttribute("role", "button");
+    newBtn3.setAttribute("id", "retake");
+    newBtn3.setAttribute("style", "text-align: center;");
+    newBtn3.href = "#";
+
+    btnArea.appendChild(br);
+    btnArea.appendChild(newBtn2);
+    btnArea.appendChild(newBtn3);
+
+}
+
+function showScoreboard(arr){
+    if(arr != undefined || arr.length >0){
+        var tbEl = document.createElement("table");
+        var trEl = document.createElement("tr");
+        var thEl = document.createElement("th");
+        var thEl2 = document.createElement("th");
+        var pEl2 = document.createElement("p")
+        var userObj;
+
+        btnArea.textContent = "";
+        questionArea.textContent="";
+
+        pEl2.textContent ="ScoreBoard";
+        pEl2.classList.add("lead");
+        pEl2.setAttribute("style", "text-align: center;");
+        questionArea.appendChild(pEl2);
+        questionArea.appendChild(br);
+        
+        thEl.textContent= "User";
+        thEl2.textContent = "Score";
+        thEl.setAttribute("style", "padding: 10px; text-align: center;");
+        thEl2.setAttribute("style", "padding: 10px; text-align: center;");
+        tbEl.setAttribute("style", "margin: 0 auto; width: 50%; border: 1px solid black;border-collapse: collapse;");
+
+        trEl.appendChild(thEl);
+        trEl.appendChild(thEl2);
+        tbEl.appendChild(trEl);
+        
+        for(var i = 0; i<arr.length;  i++){
+            userObj = arr[i];
+            var trEl2 = document.createElement("tr");
+
+            for(const user in userObj){
+                var tdEl1 = document.createElement("td");
+                
+                tdEl1.textContent = userObj[user];
+                tdEl1.setAttribute("style", "text-align: center;")
+                trEl2.appendChild(tdEl1);
+            }
+            
+            tbEl.appendChild(trEl2);
+        }
+
+        questionArea.appendChild(tbEl);
+    } else {
+        questionArea.textContent = "Scoreboard Empty!"
+    }
+
+    scoreboardBtns();
+}
+
+function getScoreboard(initial){
+    var currentUser = {user: initial, result: score};
+    var jsonStr;
+    var retrievedUsers = [];
+
+    if("user" in localStorage){  
+        //console.log("Found Users")
+        jsonStr =localStorage.getItem("user");
+        retrievedUsers = JSON.parse(jsonStr);
+        retrievedUsers.push(currentUser);
+        localStorage.setItem("user", JSON.stringify(retrievedUsers));
+        //console.log(retrievedUsers)
+    } else{
+        //console.log("First time");
+        retrievedUsers.push(currentUser);
+        localStorage.setItem("user", JSON.stringify(retrievedUsers));
+        jsonStr = localStorage.getItem("user");
+        //console.log(retrievedUsers)
+    };
+
+    showScoreboard(retrievedUsers);
+    //console.log("made it to getScoreBoard");
+
+}
+
+function submitInitials(){
+    var initials = document.getElementById("initials");
+    var userInitials = "";
+
+    userInitials = initials.value 
+    //console.log(userInitials)
+    getScoreboard(userInitials);
+}
+
+function submitAnswers(){
+    checkAnswers(questionCount);
+    questionCount++;
+
+    nextBtn.classList.remove("invisible");
+    submitBtn.classList.add("invisible");
+}
+
+function nextQuestion(){
+    questionArea.textContent ="";
+
+    if (timeUp===false && (questionCount<sortedQuestionsArr.length)){
+        loadQuizQuestion();    
+        nextBtn.classList.add("invisible");
+        submitBtn.classList.remove("invisible");
+    }  else{
+        isDoneBefore = true;
+        nextBtn.classList.add("invisible");
+        showResults();
+    }
+}
+
+function deleteLocalStorage(){
+    var clearScoreBoard = [];
+    localStorage.clear();
+    showScoreboard(clearScoreBoard);
+}
+
+function refreshPage(){
+    location.reload();
+}
+
 //Event Listeners
 startQuiz.addEventListener("click", (event)=>{
     event.preventDefault();
@@ -132,27 +303,27 @@ startQuiz.addEventListener("click", (event)=>{
     loadQuizQuestion();
 });
 
-submitBtn.addEventListener("click", (event)=>{
+btnArea.addEventListener("click",(event)=>{
     event.preventDefault();
-    checkAnswers(questionCount);
-    questionCount++;
+    var eventID = event.target.id;
 
-    nextBtn.classList.remove("invisible");
-    submitBtn.classList.add("invisible");
+    if (eventID ==="initialsSubmit"){
+        submitInitials();
+    } 
 
-})
+    if (eventID==="submitBtn"){
+        submitAnswers();
+    }
 
-nextBtn.addEventListener("click", (event)=>{
-    event.preventDefault();
-    questionArea.textContent ="";
+    if(eventID==="nextQ"){
+        nextQuestion();
+    }
 
-    if (timeUp===false && (questionCount<sortedQuestionsArr.length)){
-        loadQuizQuestion();    
-        nextBtn.classList.add("invisible");
-        submitBtn.classList.remove("invisible");
-    }  else{
-        questionArea.textContent= "You've finished before the timer! You score is: " +score;
-        nextBtn.classList.add("invisible");
-        isDone=true;
+    if(eventID==="clearScores"){
+        deleteLocalStorage();
+    }
+
+    if(eventID === "retake"){
+        refreshPage();
     }
 })
