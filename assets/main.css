@@ -1,3 +1,7 @@
+body{
+    background-color: whitesmoke;
+}
+
 .container{
     position: relative;
     padding-right: 0;

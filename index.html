@@ -15,18 +15,24 @@
     <div class="container rounded">
 
         <div class="jumbotron">
-            <h1 class="display-4">Ready to quiz!</h1>
-            <p class="lead">Take a small quiz to test your knowledge on the fly.</p>
-            <hr class="my-4">
-            <p>You will have ____ time to take the quiz. <em>Careful! wrong answers will result in minus time on the counter!</em></p>
-            <a class="btn btn-primary btn-lg" href="#" role="button">Start!</a>
+            <div class="questionTxtArea">
+                <h1 class="display-4">Ready to quiz!</h1>
+                <p class="lead">Take a small quiz to test your knowledge on the fly.</p>
+                <hr class="my-4">
+                <p>You will have ____ time to take the quiz. <em>Careful! wrong answers will result in minus time on the counter!</em></p>
+                <a class="btn btn-primary btn-lg startQuiz" href="#" role="button">Start!</a>
+            </div>
         </div>
-        <div class="countdown rounded">
-            <p>Timer:</p>
-            <div class="counter"></div>
+        <div class="countdown rounded invisible">
+            Timer <span class="counter"></div>
         </div>
     </div>
     
+
+
+    <!-- JS Files -->
+    <script src="./assets/main.js"></script>
+    <script src="./assets/questions.js"></script>
     <!-- JS for bootstrap -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
