@@ -1,17 +1,22 @@
 const questionArr = [
     {
         question: "What color is the ocean?",
-        option1: "blue",
-        option2: "orange",
-        option3:"yellow",
-        answer: "blue"
+        options:  {a: "blue", b:"green", c:"yellow"},
+        answer: "a"
     },
     {
         question: "What color is the sky?",
-        option1: "orange",
-        option2: "pink",
-        option3: "blue",
-        answer: "blue"
-    }
-
+        options:  {a: "blue", b:"green", c:"yellow"},
+        answer: "a"
+    },
+    {
+        question: "What color is the sun?",
+        options:  {a: "blue", b:"green", c:"yellow"},
+        answer: "c"
+    },
+    {
+        question: "What color is the grass?",
+        options:  {a: "blue", b:"green", c:"yellow"},
+        answer: "b"
+    },
 ]
