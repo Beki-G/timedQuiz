@@ -7,7 +7,9 @@ body{
     padding-right: 0;
     padding-left: 0;
 }
-
+.jumbotron{
+    position: relative;
+}
 .countdown{
     position: absolute;
     top: 0;
@@ -15,4 +17,11 @@ body{
     background-color: rgba(0,0,0,.3);
     color: white;
     margin-right: 15px;
+}
+
+#checkScoreboard{
+    position: absolute;
+    bottom: 0;
+    right: 0;
+
 }

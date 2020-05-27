@@ -8,10 +8,11 @@ var input = document.createElement("input");
 var br = document.createElement("br");
 var newBtn = document.createElement("a");
 var btnArea = document.querySelector(".btnArea");
+var scoreboardLink = document.getElementById("checkScoreboard");
 
 var timeUp = false;
 var wrongAns = false;
-var isDoneBefore = true;
+var isDoneBefore = false;
 var questionCount = 0;
 var score = 0;
 var sortedQuestionsArr = sortArr(questionArr);
@@ -40,7 +41,7 @@ function timerStart(){
             clearInterval(x);
             timeUp = true;
             timerDiv.classList.add("invisible");
-            
+            showResults();            
         } 
 
         if(questionCount >= sortedQuestionsArr.length){
@@ -51,7 +52,6 @@ function timerStart(){
             //console.log(deadline);
             deadline.setSeconds(deadline.getSeconds() -15 );
             wrongAns = false;
-
         }
 
     }, 1000);
@@ -123,7 +123,6 @@ function checkAnswers(count){
 }
 
 function showResults(){
-    // alert("Hey your in Show results")
     var beginOfResult = "";
 
     if (isDoneBefore===true){
@@ -147,6 +146,7 @@ function showResults(){
     newBtn.setAttribute("id", "initialsSubmit");
     newBtn.href = "#";
 
+    submitBtn.remove();
     btnArea.appendChild(newBtn);
 
 }
@@ -171,6 +171,7 @@ function scoreboardBtns(){
     newBtn3.setAttribute("style", "text-align: center;");
     newBtn3.href = "#";
 
+    btnArea.classList.add("text-center");
     btnArea.appendChild(br);
     btnArea.appendChild(newBtn2);
     btnArea.appendChild(newBtn3);
@@ -178,7 +179,7 @@ function scoreboardBtns(){
 }
 
 function showScoreboard(arr){
-    if(arr != undefined || arr.length >0){
+    if(arr != undefined && arr.length >0){
         var tbEl = document.createElement("table");
         var trEl = document.createElement("tr");
         var thEl = document.createElement("th");
@@ -222,9 +223,13 @@ function showScoreboard(arr){
 
         questionArea.appendChild(tbEl);
     } else {
-        questionArea.textContent = "Scoreboard Empty!"
+        btnArea.textContent ="",
+        questionArea.setAttribute("style", "text-align: center;");
+        questionArea.classList.add("lead");
+        questionArea.textContent = "Scoreboard Empty!";
     }
 
+    timerDiv.classList.add("invisible");
     scoreboardBtns();
 }
 
@@ -233,20 +238,27 @@ function getScoreboard(initial){
     var jsonStr;
     var retrievedUsers = [];
 
-    if("user" in localStorage){  
+    if("user" in localStorage && initial!=null){  
         //console.log("Found Users")
         jsonStr =localStorage.getItem("user");
         retrievedUsers = JSON.parse(jsonStr);
         retrievedUsers.push(currentUser);
         localStorage.setItem("user", JSON.stringify(retrievedUsers));
         //console.log(retrievedUsers)
-    } else{
+    };
+
+    if (localStorage.getItem("user") === null && initial !=null){
         //console.log("First time");
         retrievedUsers.push(currentUser);
         localStorage.setItem("user", JSON.stringify(retrievedUsers));
         jsonStr = localStorage.getItem("user");
         //console.log(retrievedUsers)
     };
+
+    if (initial === null || initial === undefined){
+        jsonStr =localStorage.getItem("user");
+        retrievedUsers = JSON.parse(jsonStr);
+    }
 
     showScoreboard(retrievedUsers);
     //console.log("made it to getScoreBoard");
@@ -280,13 +292,14 @@ function nextQuestion(){
     }  else{
         isDoneBefore = true;
         nextBtn.classList.add("invisible");
+        btnArea.textContent = "";
         showResults();
     }
 }
 
 function deleteLocalStorage(){
     var clearScoreBoard = [];
-    localStorage.clear();
+    localStorage.removeItem("user");
     showScoreboard(clearScoreBoard);
 }
 
@@ -294,36 +307,42 @@ function refreshPage(){
     location.reload();
 }
 
-//Event Listeners
-startQuiz.addEventListener("click", (event)=>{
-    event.preventDefault();
+function initializeQuiz(){
     questionArea.innerHTML = "";
     timerDiv.classList.remove("invisible");
+    startQuiz.remove();
+    scoreboardLink.remove();
     timerStart();
     loadQuizQuestion();
-});
+}
 
+//Event Listener
 btnArea.addEventListener("click",(event)=>{
     event.preventDefault();
     var eventID = event.target.id;
 
-    if (eventID ==="initialsSubmit"){
-        submitInitials();
-    } 
+    switch (eventID){
+        case "startBtn":
+            initializeQuiz();
+            break;
+        case "initialsSubmit":
+            submitInitials();
+            break;
+        case "submitBtn":
+            submitAnswers();
+            break;
+        case "nextQ":
+            nextQuestion();
+            break;
+        case "clearScores":
+            deleteLocalStorage();
+            break;
+        case "retake":
+            refreshPage();
+            break;
+        case"checkScoreboard":
+            getScoreboard();
+            break;
 
-    if (eventID==="submitBtn"){
-        submitAnswers();
-    }
-
-    if(eventID==="nextQ"){
-        nextQuestion();
-    }
-
-    if(eventID==="clearScores"){
-        deleteLocalStorage();
-    }
-
-    if(eventID === "retake"){
-        refreshPage();
     }
 })
